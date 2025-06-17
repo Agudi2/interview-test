@@ -29,3 +29,16 @@ export interface ProcessedResult {
   summary: string;
   tagFrequencies: Record<string, number>;
 } 
+
+export type TranscriptEntry = {
+  id: string
+  transcript: string
+  timestamp?: string
+}
+
+export type Task = {
+  task_text: string
+  due_date?: string
+  status: 'pending' | 'complete'
+  category?: string
+}
