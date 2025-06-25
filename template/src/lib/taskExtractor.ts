@@ -30,3 +30,14 @@ export function extractTasksFromTranscript(entry: TranscriptEntry): Task[] {
 
   return tasks
 }
+
+export function parseEntry(rawText: string) {
+  return {
+    theme: ['work-life balance'],
+    vibe: ['anxious', 'exhausted'],
+    intent: 'Find rest without guilt or fear of missing out.',
+    subtext: 'Fears being seen as less committed.',
+    persona_trait: ['conscientious', 'vigilant'],
+    bucket: ['Thought']
+  }
+}

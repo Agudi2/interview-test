@@ -42,3 +42,13 @@ export type Task = {
   status: 'pending' | 'complete'
   category?: string
 }
+
+export type UserProfile = {
+  top_themes: string[]
+  theme_count: Record<string, number>
+  dominant_vibe: string
+  vibe_count: Record<string, number>
+  bucket_count: Record<string, number>
+  trait_pool: string[]
+  last_theme: string
+}

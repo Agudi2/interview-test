@@ -6,7 +6,10 @@ import type { UserProfile } from './lib/types'
 
 // Step 1 – Accept transcript
 const mode = process.argv[2] as 'first' | 'hundred'
-const transcript = mode === 'first' ? mockVoiceEntries[0].transcript : mockVoiceEntries[100].transcript
+const transcript = mode === 'first'
+  ? mockVoiceEntries[0].transcript_user
+  : mockVoiceEntries[100].transcript_user
+
 const raw_text = transcript
 console.log(`[RAW_TEXT_IN] input=– | output=${raw_text} | note=Transcript received`)
 
