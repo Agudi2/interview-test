@@ -4,23 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
-    "test": "vitest run",
-    "dev": "vitest",
-    "format": "prettier --check ."
-  },
-  "dependencies": {},
+  "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
+  "test": "vitest run",
+  "dev": "vitest",
+  "format": "prettier --check .",
+  "simulate:first": "ts-node --loader ts-node/esm src/pipeline.ts first",
+  "simulate:hundred": "ts-node --loader ts-node/esm src/pipeline.ts hundred"
+},
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "csv-parse": "^5.5.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unused-imports": "^3.1.0",
     "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.2",
-    "vitest": "^1.4.0",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
-    "csv-parse": "^5.5.3"
+    "vitest": "^1.4.0"
   }
-} 
+}
