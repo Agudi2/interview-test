@@ -11,12 +11,18 @@
 // The template keeps it optional so it still works without.
 
 let OpenAI: any;
-try {
-  // eslint-disable-next-line global-require, import/extensions, import/no-extraneous-dependencies
-  OpenAI = (await import("openai")).default;
-} catch {
-  // no dependency installed – we will use stubs
+
+async function loadOpenAI() {
+  if (!OpenAI) {
+    try {
+      OpenAI = (await import("openai")).default;
+    } catch {
+      // fallback
+    }
+  }
+  return OpenAI;
 }
+
 
 const apiKey = process.env.OPENAI_API_KEY || "";
 
@@ -30,18 +36,23 @@ export function hasRealOpenAIKey() {
  * • Otherwise → return a deterministic pseudo-vector so tests stay deterministic.
  */
 export async function embed(text: string): Promise<number[]> {
-  if (hasRealOpenAIKey()) {
+  const OpenAI = await loadOpenAI();
+  const apiKey = process.env.OPENAI_API_KEY || "";
+
+  if (apiKey && OpenAI) {
     const client = new OpenAI({ apiKey });
     const res = await client.embeddings.create({
       model: "text-embedding-3-small",
       input: text,
     });
-    // @ts-ignore – typings vary by version
+    // @ts-ignore
     return res.data[0].embedding as number[];
   }
-  // Fallback: convert chars to small numeric vector (deterministic)
+
+  // fallback: mock vector
   return Array.from(
     { length: 8 },
     (_, i) => ((text.charCodeAt(i % text.length) || 0) % 100) / 100
   );
 }
+
