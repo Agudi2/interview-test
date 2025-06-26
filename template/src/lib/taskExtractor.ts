@@ -1,4 +1,5 @@
 import { TranscriptEntry, Task } from './types'
+import type { ParsedEntry } from './types'
 
 const TASK_PATTERNS: RegExp[] = [
   /call\s+[\w\s]+/i,
@@ -31,13 +32,29 @@ export function extractTasksFromTranscript(entry: TranscriptEntry): Task[] {
   return tasks
 }
 
-export function parseEntry(rawText: string) {
-  return {
-    theme: ['work-life balance'],
-    vibe: ['anxious', 'exhausted'],
-    intent: 'Find rest without guilt or fear of missing out.',
-    subtext: 'Fears being seen as less committed.',
-    persona_trait: ['conscientious', 'vigilant'],
-    bucket: ['Thought']
+export function parseEntry(text: string): ParsedEntry {
+  const lower = text.toLowerCase();
+
+  let theme = 'general';
+  let vibe = 'reflective';
+
+  if (lower.includes('scrolling') || lower.includes('sleep') || lower.includes('exhausted') || lower.includes('guilt')) {
+    theme = 'work-life balance';
+    vibe = 'anxious';
+  } else if (lower.includes('opportunity') || lower.includes('decision') || lower.includes('right call')) {
+    theme = 'decision making';
+    vibe = 'conflicted';
+  } else if (lower.includes('promotion') || lower.includes('career') || lower.includes('goal')) {
+    theme = 'career growth';
+    vibe = 'driven';
   }
+
+  return {
+    theme: [theme],
+    vibe: [vibe],
+    intent: "reflecting",
+    subtext: "",
+    persona_trait: [vibe],
+    bucket: ["Thought"]
+  };
 }

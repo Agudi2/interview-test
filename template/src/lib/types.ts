@@ -52,3 +52,13 @@ export type UserProfile = {
   trait_pool: string[]
   last_theme: string
 }
+
+export type ParsedEntry = {
+  theme: string[]
+  vibe: string[]
+  intent: string
+  subtext: string
+  persona_trait: string[]
+  bucket: string[]
+}
+
