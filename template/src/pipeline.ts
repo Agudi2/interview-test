@@ -5,11 +5,12 @@ import { mockVoiceEntries } from './lib/mockData'
 console.log(`Total mockVoiceEntries loaded: ${mockVoiceEntries.length}`)
 import type { UserProfile } from './lib/types'
 
+
 // Step 1 – Accept transcript
 const mode = process.argv[2] as 'first' | 'hundred'
 const transcript = mode === 'first'
-  ? mockVoiceEntries[0].transcript_user
-  : mockVoiceEntries[99].transcript_user
+  ? mockVoiceEntries[1].transcript_user
+  : mockVoiceEntries[13].transcript_user
 
 const raw_text = transcript
 console.log(`[RAW_TEXT_IN] input=– | output=${raw_text} | note=Transcript received`)
@@ -57,6 +58,9 @@ console.log(`[META_EXTRACT] input=raw_text | output=${JSON.stringify(meta)} | no
 // Step 6 – Parse entry
 const parsed = parseEntry(raw_text)
 console.log(`[PARSE_ENTRY] input=raw_text | output=${JSON.stringify(parsed)} | note=Parsed diary entry fields`)
+console.log(`Parsed theme: ${JSON.stringify(parsed.theme)}`);
+console.log(`Parsed vibe: ${JSON.stringify(parsed.vibe)}`);
+
 
 // Step 7 – Carry-in logic 
 const carry_in = Math.random() > 0.5
@@ -77,9 +81,24 @@ const entryId = `entry_${Date.now()}`
 console.log(`[SAVE_ENTRY] input=parsed+profile | output=${entryId} | note=Saved mock entry`)
 
 // Step 11 – Generate GPT reply
-const response_text = mode === 'first'
-  ? "Rest is not failure. You're trying."
-  : "🧩 Still pushing—remember to breathe 💭"
+let response_text = ''
+
+const theme = (parsed.theme?.[0] || '').toLowerCase();
+const vibe = (parsed.vibe?.[0] || '').toLowerCase();
+
+if (theme.includes('balance')) {
+  response_text = "Remember, rest is productive too. You’re allowed to pause. 🧘‍♀️";
+} else if (vibe.includes('anxious') || vibe.includes('conflicted')) {
+  response_text = "Take a breath. You're doing better than you think. 🌿";
+} else if (vibe.includes('driven') || theme.includes('goal')) {
+  response_text = "Keep pushing, but don’t forget to check in with yourself. 💼💙";
+} else if (vibe.includes('reflective') || theme.includes('general')) {
+  response_text = "It's okay to pause and reflect. Your thoughts matter. 🪞";
+} else {
+  response_text = "Thanks for sharing. Every feeling is valid. 💬";
+}
+
+
 console.log(`[GPT_REPLY] input=parsed+profile | output="${response_text}" | note=Empathy reply generated`)
 
 // Step 12 – Publish
