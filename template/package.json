@@ -9,7 +9,8 @@
     "dev": "vitest",
     "format": "prettier --check .",
     "simulate:first": "pnpm exec tsx src/pipeline.ts first",
-    "simulate:hundred": "pnpm exec tsx src/pipeline.ts hundred"
+    "simulate:hundred": "pnpm exec tsx src/pipeline.ts hundred",
+    "start:ui": "vite"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
