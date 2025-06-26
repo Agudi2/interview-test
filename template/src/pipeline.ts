@@ -2,13 +2,14 @@
 import { parseEntry } from './lib/taskExtractor'
 import { generateEmbedding } from './lib/embedding'
 import { mockVoiceEntries } from './lib/mockData'
+console.log(`Total mockVoiceEntries loaded: ${mockVoiceEntries.length}`)
 import type { UserProfile } from './lib/types'
 
 // Step 1 – Accept transcript
 const mode = process.argv[2] as 'first' | 'hundred'
 const transcript = mode === 'first'
   ? mockVoiceEntries[0].transcript_user
-  : mockVoiceEntries[100].transcript_user
+  : mockVoiceEntries[99].transcript_user
 
 const raw_text = transcript
 console.log(`[RAW_TEXT_IN] input=– | output=${raw_text} | note=Transcript received`)

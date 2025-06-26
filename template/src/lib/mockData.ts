@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { parse } from 'csv-parse/sync'
 
 import { VoiceEntry } from './types.js'
 
-// Path to the CSV that ships with the template
-const csvPath = path.resolve(
-  new URL('.', import.meta.url).pathname,
+const csvPath = path.join(
+  path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]):/, '$1:'),
   'Expanded_Diary_Entries.csv'
 )
 
@@ -13,34 +13,33 @@ let raw = ''
 try {
   raw = fs.readFileSync(csvPath, 'utf8')
 } catch {
-  // If the file cannot be read for some reason (e.g. distributed without CSV)
-  // fall back to a small stub so tests keep working.
-  raw = 'dummy\nline'
+  console.warn('⚠️ CSV file not found, falling back to dummy data')
+  raw = 'transcript_raw,transcript_user,tags_model,tags_user,emotion_score_score,created_at,updated_at,embedding\n"","","","","","","",""'
 }
 
-// Remove first header line and empty trailing newline, then count rows
-const rowCount = Math.max(0, raw.trim().split('\n').length - 1)
+const records = parse(raw, {
+  columns: true,
+  skip_empty_lines: true,
+})
 
-// Build a minimal VoiceEntry object. For unit-tests we only care about tags_user,
-// but we populate required fields to satisfy the strict compiler.
-function buildEntry(id: number): VoiceEntry {
-  const iso = new Date().toISOString()
+export const mockVoiceEntries: VoiceEntry[] = records.map((row: any, index: number) => {
+  const isoCreated = new Date(row.created_at).toISOString()
+  const isoUpdated = new Date(row.updated_at).toISOString()
+
   return {
-    id: String(id),
+    id: String(index),
     user_id: 'mock',
     audio_url: null,
-    transcript_raw: '',
-    transcript_user: '',
+    transcript_raw: row.transcript_raw || '',
+    transcript_user: row.transcript_user || '',
     language_detected: 'en',
     language_rendered: 'en',
     tags_model: [],
-    tags_user: ['reflection'],
+    tags_user: row.tags_user ? row.tags_user.split(',') : ['reflection'],
     category: null,
-    created_at: iso,
-    updated_at: iso,
-    emotion_score_score: null,
+    created_at: isoCreated,
+    updated_at: isoUpdated,
+    emotion_score_score: row.emotion_score_score ? parseFloat(row.emotion_score_score) : null,
     embedding: null,
   }
-}
-
-export const mockVoiceEntries: VoiceEntry[] = Array.from({ length: rowCount }).map((_, i) => buildEntry(i)) 
+})
