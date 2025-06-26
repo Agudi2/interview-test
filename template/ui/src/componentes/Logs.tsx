@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type DiaryLog = {
   entryId: string;
@@ -6,6 +6,7 @@ type DiaryLog = {
   response_text: string;
   timestamp: number;
 };
+
 
 function Logs() {
   const [logs, setLogs] = useState<DiaryLog[]>([]);
