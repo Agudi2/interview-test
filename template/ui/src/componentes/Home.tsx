@@ -9,17 +9,29 @@ function Home() {
     e.preventDefault();
     setLoading(true);
     setResult("");
-    setTimeout(() => {
-      setResult("AI Reply: " + input);
-      setLoading(false);
-    }, 900);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setLoading(true);
-      setResult("");
-      await fetch(import.meta.env.VITE_API_URL + "");
-    };
+    try {
+      const res = await fetch("http://localhost:5174/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: input }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setResult("AI Reply: " + data.response_text);
+      } else {
+        setResult("Error: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      setResult("Error: Could not connect to backend.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
