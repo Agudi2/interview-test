@@ -1,31 +1,51 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { parse } from 'csv-parse/sync';
+// src/lib/mockData.ts
+import fs from 'node:fs'
+import path from 'node:path'
 
+import type { VoiceEntry } from './types'
 
-import { VoiceEntry } from './types'; 
-
+// Read CSV file or fallback to a minimal dummy row
 const csvPath = path.join(
   path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]):/, '$1:'),
   'Expanded_Diary_Entries.csv'
-);
+)
 
-let raw = '';
+let raw = ''
 try {
-  raw = fs.readFileSync(csvPath, 'utf8');
+  raw = fs.readFileSync(csvPath, 'utf8')
 } catch {
-  console.warn('⚠️ CSV file not found, falling back to dummy data');
-  raw = 'transcript_raw,transcript_user,tags_model,tags_user,emotion_score_score,created_at,updated_at,embedding\n"","","","","","","",""';
+  console.warn('⚠️ CSV file not found, falling back to dummy data')
+  // Fallback includes valid ISO timestamps for created_at and updated_at
+  const now = new Date().toISOString()
+  raw = `transcript_raw,transcript_user,tags_model,tags_user,emotion_score_score,created_at,updated_at,embedding\n"", "", "", "", "", "${now}", "${now}", ""`
 }
 
-const records = parse(raw, {
-  columns: true,
-  skip_empty_lines: true,
-});
+// Simple CSV parsing without external dependency
+const lines = raw.split('\n').filter(Boolean)
+const headers = lines[0].split(',').map(h => h.trim())
+const dataRows = lines.slice(1)
 
-export const mockVoiceEntries: VoiceEntry[] = records.map((row: Record<string, string>, index: number) => {
-  const isoCreated = new Date(row.created_at).toISOString();
-  const isoUpdated = new Date(row.updated_at).toISOString();
+const records = dataRows.map((line) => {
+  // Extract quoted values
+  const matches = line.match(/"(.*?)"/g) || []
+  const values = matches.map(v => v.replace(/"/g, '').trim())
+  const obj: Record<string, string> = {}
+  headers.forEach((header, idx) => {
+    obj[header] = values[idx] ?? ''
+  })
+  return obj
+})
+
+export const mockVoiceEntries: VoiceEntry[] = records.map((row, index) => {
+  // Parse ISO dates, fallback to now if invalid
+  const createdDate = new Date(row.created_at)
+  const updatedDate = new Date(row.updated_at)
+  const isoCreated = isNaN(createdDate.getTime())
+    ? new Date().toISOString()
+    : createdDate.toISOString()
+  const isoUpdated = isNaN(updatedDate.getTime())
+    ? new Date().toISOString()
+    : updatedDate.toISOString()
 
   return {
     id: String(index),
@@ -42,5 +62,5 @@ export const mockVoiceEntries: VoiceEntry[] = records.map((row: Record<string, s
     updated_at: isoUpdated,
     emotion_score_score: row.emotion_score_score ? parseFloat(row.emotion_score_score) : null,
     embedding: null,
-  };
-});
+  }
+})

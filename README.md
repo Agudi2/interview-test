@@ -1,51 +1,43 @@
-# 📦 Sentari Kit
+# Sentari – “Transcript to Empathy” Pipeline
 
-This folder contains **everything** a candidate needs to complete an interview task.
+This repository implements the full 13-step Sentari diary processing pipeline. It converts a voice transcript into:
 
-Tech stack:
-Next.js 15 (App Router, React Server Components)
-React 19
-TypeScript
-Tailwind CSS 3 
-Supabase
+* A short, empathetic AI reply (≤ 25 chars)
+* An updated long-term user profile
 
-Structure:
-```
-contrib/
- ├─ README.md                # you are here
- ├─ template/                # minimal repo candidates will fork
- └─ scripts/
-     └─ verify-contrib.sh    # maintainer helper to check a submission
+## Installation
+
+Ensure you have Node.js 18+ installed, then:
+
+```bash
+pnpm install
 ```
 
-Read `template/README.md` for the instructions you will send to candidates.
+## Simulations
 
-## Folder structure
+* **First-ever entry** (no prior data):
 
-```
-contrib/
- ├─ README.md                # this guide
- ├─ template/                # minimal project template for contributors
- │   ├─ src/
- │   │   ├─ lib/
- │   │   │   └─ sampleService.ts
- │   │   └─ app/api/sample/route.ts
- │   ├─ tests/
- │   │   └─ sample.test.ts
- │   ├─ package.json         # locked dependency versions
- │   ├─ tsconfig.json
- │   └─ .eslintrc.json
- └─ scripts/
-     └─ verify-contrib.sh    # one-liner acceptance script for maintainers
-```
+  ```bash
+  pnpm run simulate:first
+  ```
+* **100th entry** (with 99 mock entries):
 
-## Quick workflow overview
+  ```bash
+  pnpm run simulate:hundred
+  ```
 
-1. A contributor **forks** the `template/` repo (or clicks *Use this template* on GitHub).  
-2. They implement their feature following `template/README.md` and make sure `pnpm lint && pnpm test` are both green.  
-3. They generate a `patch.diff` or simply share the repository URL in the designated Issue.  
-4. You run `scripts/verify-contrib.sh <repo-url>` to clone the repo and execute the automated checks offline.  
-5. If it passes and looks valuable, you manually cherry-pick / copy the code into the main code-base.
+Each command logs all 13 required steps:
+`RAW_TEXT_IN`, `EMBEDDING`, `FETCH_RECENT`, …, `COST_LATENCY_LOG`.
 
-> Important: everything lives under the `contrib/` sub-directory 
+## Development
 
+* **Lint**:  `pnpm run lint`
+* **Tests**: `pnpm run test`
+
+## Assumptions
+
+* Embeddings are mocked as fixed 8-dimensional vectors.
+* Empathy replies are trimmed to 25 characters.
+* Carry-in logic is randomly simulated.
+
+*No actual API keys are committed. To enable real OpenAI calls, add `OPENAI_API_KEY` in a `.env` file.*
