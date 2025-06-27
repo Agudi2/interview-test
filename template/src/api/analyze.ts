@@ -33,7 +33,7 @@ export async function analyzeDiaryEntry(text: string) {
         },
         {
           role: "user",
-          content: `Diary entry: "${text}"\nTheme: ${theme}\nVibe: ${vibe}\n\nRespond in 1–2 sentences with empathy and kindness.`,
+          content: `Diary entry: "${text}"\nTheme: ${theme}\nVibe: ${vibe}\n\nRespond with empathy in **25 characters or fewer**, ideally a short supportive phrase or emoji.`,
         },
       ],
       temperature: 0.8,
