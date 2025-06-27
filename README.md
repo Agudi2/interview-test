@@ -12,28 +12,39 @@ This repository contains two parts:
 ## Setup
 
 ```bash
-# Install root (UI + API) dependencies\ npm install
-# Install pipeline dependencies
-cd template && pnpm install && cd ..
+# Install root dependencies (API & UI)
+pnpm install
+
+# Install pipeline dependencies (template)
+cd template
+pnpm install
+cd ..
+
+# Install UI dependencies (template/ui)
+cd template/ui
+pnpm install
+cd ../..
 ```
 
 ## CLI Pipeline Simulations
 
 ```bash
+# Navigate to pipeline folder
 cd template
+
 # First-ever entry (no history)
-pm run simulate:first
-# 100th entry (with 99 mocks)
-pm run simulate:hundred
+pnpm run simulate:first
+
+# 100th entry (with 99 mock entries)
+pnpm run simulate:hundred
 ```
 
-Outputs 13 log lines per run.
+Logs 13 steps per run in `[TAG] input=… | output=… | note=…` format.
 
 ## API Server
 
 ```bash
-# From project root
-pnpm exec tsx server.ts
+# From project root\pnpm exec tsx server.ts
 ```
 
 Server listens on [http://localhost:5174]
@@ -41,7 +52,8 @@ Server listens on [http://localhost:5174]
 ## Frontend UI
 
 ```bash
-# From project root\ npm run dev
+# From project root
+pnpm run dev
 ```
 
 Open [http://localhost:5173/]
@@ -49,11 +61,14 @@ Open [http://localhost:5173/]
 ## Lint & Tests
 
 ```bash
-# Pipeline
-cd template && pnpm run lint && pnpm run test
+# Pipeline (CLI)
+cd template
+pnpm run lint
+pnpm run test
 
-# UI
-cd .. && pnpm run lint
+# UI & API (root)
+cd ..
+pnpm run lint
 ```
 
 ## Assumptions
