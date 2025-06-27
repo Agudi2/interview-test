@@ -1,4 +1,4 @@
-import { VoiceEntry, ProcessedResult } from './types.js'
+import { VoiceEntry, ProcessedResult } from './types'
 
 /**
  * processEntries

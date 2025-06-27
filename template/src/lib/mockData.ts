@@ -1,30 +1,31 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { parse } from 'csv-parse/sync'
+import fs from 'node:fs';
+import path from 'node:path';
+import { parse } from 'csv-parse/sync';
 
-import { VoiceEntry } from './types.js'
+
+import { VoiceEntry } from './types'; 
 
 const csvPath = path.join(
   path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]):/, '$1:'),
   'Expanded_Diary_Entries.csv'
-)
+);
 
-let raw = ''
+let raw = '';
 try {
-  raw = fs.readFileSync(csvPath, 'utf8')
+  raw = fs.readFileSync(csvPath, 'utf8');
 } catch {
-  console.warn('⚠️ CSV file not found, falling back to dummy data')
-  raw = 'transcript_raw,transcript_user,tags_model,tags_user,emotion_score_score,created_at,updated_at,embedding\n"","","","","","","",""'
+  console.warn('⚠️ CSV file not found, falling back to dummy data');
+  raw = 'transcript_raw,transcript_user,tags_model,tags_user,emotion_score_score,created_at,updated_at,embedding\n"","","","","","","",""';
 }
 
 const records = parse(raw, {
   columns: true,
   skip_empty_lines: true,
-})
+});
 
-export const mockVoiceEntries: VoiceEntry[] = records.map((row: any, index: number) => {
-  const isoCreated = new Date(row.created_at).toISOString()
-  const isoUpdated = new Date(row.updated_at).toISOString()
+export const mockVoiceEntries: VoiceEntry[] = records.map((row: Record<string, string>, index: number) => {
+  const isoCreated = new Date(row.created_at).toISOString();
+  const isoUpdated = new Date(row.updated_at).toISOString();
 
   return {
     id: String(index),
@@ -41,5 +42,5 @@ export const mockVoiceEntries: VoiceEntry[] = records.map((row: any, index: numb
     updated_at: isoUpdated,
     emotion_score_score: row.emotion_score_score ? parseFloat(row.emotion_score_score) : null,
     embedding: null,
-  }
-})
+  };
+});

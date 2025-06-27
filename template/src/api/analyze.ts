@@ -1,17 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { embed } from "../lib/openai";
+import { embed } from "../lib/openai"; // Already handles loading OpenAI
 import { parseEntry } from "../lib/taskExtractor";
-import type { UserProfile } from "../lib/types";
-import OpenAI from "openai";
+//import type { UserProfile } from "../lib/types"; Not using it anymore
 
 const apiKey = process.env.OPENAI_API_KEY;
-const openai = apiKey ? new OpenAI({ apiKey }) : null;
 
-export async function analyzeDiaryEntry(text: string, profile?: UserProfile) {
+export async function analyzeDiaryEntry(text: string) {
   const raw_text = text;
-
   const embedding = await embed(raw_text);
   const parsed = parseEntry(raw_text);
 
@@ -21,7 +18,10 @@ export async function analyzeDiaryEntry(text: string, profile?: UserProfile) {
   let response_text = "";
 
   try {
-    if (!openai) throw new Error("OpenAI client not initialized");
+    const { default: OpenAI } = await import("openai");
+    if (!apiKey) throw new Error("Missing OpenAI key");
+
+    const openai = new OpenAI({ apiKey });
 
     const gptResponse = await openai.chat.completions.create({
       model: "gpt-4",
@@ -42,20 +42,19 @@ export async function analyzeDiaryEntry(text: string, profile?: UserProfile) {
     response_text =
       gptResponse.choices[0].message.content?.trim() ||
       "Thanks for sharing. Every feeling is valid. 💬";
-  } catch (err: any) {
-    console.warn("⚠️ GPT failed, using fallback:", err?.message || err);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.warn("⚠️ GPT failed, using fallback:", error.message || error);
 
-    // Fallback if GPT fails (quota, network, etc.)
+    // Fallback
     if (theme.includes("balance")) {
-      response_text =
-        "Remember, rest is productive too. You’re allowed to pause. 🧘‍♀️";
+      response_text = "Remember, rest is productive too. 🧘‍♀️";
     } else if (vibe.includes("anxious") || vibe.includes("conflicted")) {
       response_text = "Take a breath. You're doing better than you think. 🌿";
     } else if (vibe.includes("driven") || theme.includes("goal")) {
-      response_text =
-        "Keep pushing, but don’t forget to check in with yourself. 💼💙";
+      response_text = "Keep pushing, but don’t forget to check in. 💼💙";
     } else if (vibe.includes("reflective") || theme.includes("general")) {
-      response_text = "It's okay to pause and reflect. Your thoughts matter. 🪞";
+      response_text = "It's okay to pause and reflect. 🪞";
     } else {
       response_text = "Thanks for sharing. Every feeling is valid. 💬";
     }
