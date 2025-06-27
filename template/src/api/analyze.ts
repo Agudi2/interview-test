@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { embed } from "../lib/openai"; // Already handles loading OpenAI
+import { embed } from "../lib/openai"; 
 import { parseEntry } from "../lib/taskExtractor";
 //import type { UserProfile } from "../lib/types"; Not using it anymore
 

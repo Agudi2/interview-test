@@ -1,43 +1,63 @@
-# Sentari – “Transcript to Empathy” Pipeline
+# Sentari – Transcript to Empathy Pipeline
 
-This repository implements the full 13-step Sentari diary processing pipeline. It converts a voice transcript into:
+This repository contains two parts:
 
-* A short, empathetic AI reply (≤ 25 chars)
-* An updated long-term user profile
+1. **CLI Pipeline** (`template/`) – processes diary transcripts through all 13 steps.
+2. **Frontend & API** (root) – a simple React UI and Express API.
 
-## Installation
+## Prerequisites
 
-Ensure you have Node.js 18+ installed, then:
+* Node.js 18+ and pnpm
+
+## Setup
 
 ```bash
-pnpm install
+# Install root (UI + API) dependencies\ npm install
+# Install pipeline dependencies
+cd template && pnpm install && cd ..
 ```
 
-## Simulations
+## CLI Pipeline Simulations
 
-* **First-ever entry** (no prior data):
+```bash
+cd template
+# First-ever entry (no history)
+pm run simulate:first
+# 100th entry (with 99 mocks)
+pm run simulate:hundred
+```
 
-  ```bash
-  pnpm run simulate:first
-  ```
-* **100th entry** (with 99 mock entries):
+Outputs 13 log lines per run.
 
-  ```bash
-  pnpm run simulate:hundred
-  ```
+## API Server
 
-Each command logs all 13 required steps:
-`RAW_TEXT_IN`, `EMBEDDING`, `FETCH_RECENT`, …, `COST_LATENCY_LOG`.
+```bash
+# From project root
+pnpm exec tsx server.ts
+```
 
-## Development
+Server listens on [http://localhost:5174]
 
-* **Lint**:  `pnpm run lint`
-* **Tests**: `pnpm run test`
+## Frontend UI
+
+```bash
+# From project root\ npm run dev
+```
+
+Open [http://localhost:5173/]
+
+## Lint & Tests
+
+```bash
+# Pipeline
+cd template && pnpm run lint && pnpm run test
+
+# UI
+cd .. && pnpm run lint
+```
 
 ## Assumptions
 
 * Embeddings are mocked as fixed 8-dimensional vectors.
 * Empathy replies are trimmed to 25 characters.
 * Carry-in logic is randomly simulated.
-
-*No actual API keys are committed. To enable real OpenAI calls, add `OPENAI_API_KEY` in a `.env` file.*
